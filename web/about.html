@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — QAES Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Archivo+Expanded:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="panel-frame">
+
+  <!-- ============ HEADER ============ -->
+  <header class="console-header">
+    <div class="header-left">
+      <h1>QAES<span class="dim">·CONSOLE</span></h1>
+      <p class="subtitle">two-stage encryption instrument — quantum seed / aes-256-gcm</p>
+    </div>
+    <div class="header-right">
+      <div class="status-led" id="connStatus">
+        <span class="led" id="connLed"></span>
+        <span id="connLabel">CONNECTING</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ NAV ============ -->
+  <nav class="top-nav" aria-label="Main">
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="encrypt.html" class="nav-link">ENCRYPT</a>
+    <a href="decrypt.html" class="nav-link">DECRYPT</a>
+    <a href="about.html" class="nav-link active">ABOUT</a>
+    <span class="nav-divider" aria-hidden="true"></span>
+    <a href="settings.html" id="navAccountLink" class="nav-link nav-account signed-in" hidden>ACCOUNT</a>
+    <a href="login.html" id="navLoginLink" class="nav-link nav-account">LOGIN</a>
+    <a href="register.html" id="navRegisterLink" class="nav-link nav-account">REGISTER</a>
+    <a href="#" id="navLogoutLink" class="nav-link nav-account" hidden>LOGOUT</a>
+  </nav>
+
+  <div class="about-body">
+    <h2>How the pipeline works</h2>
+    <p class="about-intro">
+      QAES runs every file through two independent encryption stages before
+      it's written to disk. This page explains what each stage does and why
+      it's designed this way — useful background if you're presenting or
+      writing up this project.
+    </p>
+
+    <div class="layer-block amber">
+      <div class="layer-num">01</div>
+      <div class="layer-content">
+        <h3>Quantum stage — seed generation</h3>
+        <p>
+          A quantum circuit puts qubits into superposition with a Hadamard
+          gate, then measures them. Quantum mechanics guarantees the
+          outcome of each measurement is fundamentally undetermined until
+          it happens — not merely hard to predict, like a classical
+          pseudo-random number generator, but genuinely probabilistic. This
+          runs on Qiskit's <code>AerSimulator</code> by default, so the
+          app works offline without an IBM Quantum account.
+        </p>
+        <p>
+          The measured bits become a 16-byte <strong>quantum seed</strong>
+          and a 12-byte <strong>nonce</strong>, implemented in
+          <code>core/qrng.py</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="layer-block">
+      <div class="layer-num">02</div>
+      <div class="layer-content">
+        <h3>Key derivation — combining both secrets</h3>
+        <p>
+          The quantum seed alone isn't the encryption key. It's concatenated
+          with your password and stretched through
+          <strong>PBKDF2-HMAC-SHA256</strong> at 390,000 iterations (the
+          OWASP-recommended minimum) to produce the actual 256-bit AES key.
+          This is the "double" in double encryption: an attacker needs
+          <em>both</em> your password and the quantum seed to derive the
+          key. The seed is stored in the output file's header — similar to
+          a salt — so it isn't secret on its own, but it can't be guessed
+          either. Implemented in <code>core/crypto_engine.py</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="layer-block green">
+      <div class="layer-num">03</div>
+      <div class="layer-content">
+        <h3>AES stage — confidentiality and integrity</h3>
+        <p>
+          The derived key drives <strong>AES-256 in GCM mode</strong>, an
+          authenticated cipher: it doesn't just hide your data, it also
+          produces a 16-byte tag that proves the ciphertext wasn't altered.
+          If even one byte changes — or the wrong password is used —
+          decryption fails outright instead of silently returning garbage.
+          Implemented in <code>core/aes_cipher.py</code> using Python's
+          audited <code>cryptography</code> library.
+        </p>
+      </div>
+    </div>
+
+    <p class="section-label">Frequently asked</p>
+    <dl>
+      <div class="faq-row">
+        <dt>Why not hand-roll the AES math too?</dt>
+        <dd>Hand-rolled AES is extremely easy to get subtly wrong, and a
+        flawed implementation provides no real security regardless of how
+        well it's understood. The novel, "from scratch" contribution of
+        this project is the quantum random number generation pipeline —
+        circuit design, bit extraction, and unbiased integer sampling —
+        not a reimplementation of a 25-year-old standard that production
+        systems also don't reimplement themselves.</dd>
+      </div>
+      <div class="faq-row">
+        <dt>Is the randomness really quantum, or simulated?</dt>
+        <dd>The circuit logic (superposition + measurement) is run on
+        Qiskit's Aer simulator, which simulates the quantum mechanics
+        classically. The same circuit can be pointed at real IBM Quantum
+        hardware instead — see the comments at the bottom of
+        <code>core/qrng.py</code> — but that requires an account and has
+        queue wait times, so the simulator is used by default for a
+        responsive app.</dd>
+      </div>
+      <div class="faq-row">
+        <dt>What happens if I forget my password?</dt>
+        <dd>There is no recovery. The password is never stored anywhere —
+        only used transiently to derive the key — so a forgotten password
+        means the file cannot be decrypted by this tool or anyone else.</dd>
+      </div>
+      <div class="faq-row">
+        <dt>Does any data leave this machine?</dt>
+        <dd>No. The web console talks only to a Flask server running on
+        <code>127.0.0.1</code> (your own machine). No file or password is
+        ever sent over the network.</dd>
+      </div>
+    </dl>
+  </div>
+
+  <footer class="console-footer">
+    <p>local instance · 127.0.0.1:5000 · no data leaves this machine</p>
+  </footer>
+
+</div>
+
+<script src="shared.js"></script>
+</body>
+</html>

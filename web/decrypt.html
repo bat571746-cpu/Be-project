@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decrypt — QAES Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Archivo+Expanded:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="panel-frame">
+
+  <!-- ============ HEADER / INSTRUMENT LABEL ============ -->
+  <header class="console-header">
+    <div class="header-left">
+      <h1>QAES<span class="dim">·CONSOLE</span></h1>
+      <p class="subtitle">two-stage encryption instrument — quantum seed / aes-256-gcm</p>
+    </div>
+    <div class="header-right">
+      <div class="status-led" id="connStatus">
+        <span class="led" id="connLed"></span>
+        <span id="connLabel">CONNECTING</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ NAV ============ -->
+  <nav class="top-nav" aria-label="Main">
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="encrypt.html" class="nav-link">ENCRYPT</a>
+    <a href="decrypt.html" class="nav-link active">DECRYPT</a>
+    <a href="about.html" class="nav-link">ABOUT</a>
+    <span class="nav-divider" aria-hidden="true"></span>
+    <a href="settings.html" id="navAccountLink" class="nav-link nav-account signed-in" hidden>ACCOUNT</a>
+    <a href="login.html" id="navLoginLink" class="nav-link nav-account">LOGIN</a>
+    <a href="register.html" id="navRegisterLink" class="nav-link nav-account">REGISTER</a>
+    <a href="#" id="navLogoutLink" class="nav-link nav-account" hidden>LOGOUT</a>
+  </nav>
+
+  <main class="console-body">
+
+    <!-- ============ LEFT: CONTROLS ============ -->
+    <section class="controls" aria-label="Controls">
+
+      <div class="field">
+        <label for="fileInput">ENCRYPTED FILE (.qaes)</label>
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose or drop a .qaes file">
+          <input type="file" id="fileInput" accept=".qaes" hidden>
+          <div class="dropzone-inner">
+            <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+              <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p id="dropzoneText">drop .qaes file, or click to browse</p>
+            <p class="dropzone-meta" id="dropzoneMeta">no file selected</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="passwordInput">PASSPHRASE</label>
+        <div class="password-row">
+          <input type="password" id="passwordInput" placeholder="enter passphrase used to encrypt" autocomplete="off">
+          <button type="button" id="togglePassword" class="icon-btn" aria-label="Show passphrase">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <p class="field-hint">must match exactly — the quantum seed used originally is read from the file header</p>
+      </div>
+
+      <button id="runBtn" class="run-btn" disabled>
+        <span id="runBtnLabel">DECRYPT FILE</span>
+      </button>
+
+      <div class="result-box" id="resultBox" hidden>
+        <p id="resultText"></p>
+        <a id="downloadLink" class="download-link" hidden download>↓ download original file</a>
+      </div>
+
+    </section>
+
+    <!-- ============ RIGHT: SIGNAL PATH DIAGRAM ============ -->
+    <section class="signal-path" aria-label="Decryption pipeline">
+
+      <div class="stage" id="stageFile" data-stage="file">
+        <div class="stage-dot"></div>
+        <div class="stage-label">ENCRYPTED FILE</div>
+        <div class="stage-sub" id="fileStageMeta">awaiting input</div>
+      </div>
+
+      <div class="trace" id="trace1"><span class="trace-pulse"></span></div>
+
+      <div class="stage" id="stageQuantum" data-stage="quantum">
+        <div class="stage-dot"></div>
+        <div class="stage-label">KEY DERIVATION</div>
+        <div class="stage-sub">stored seed + passphrase · pbkdf2</div>
+        <div class="bitstream" id="bitstream" aria-hidden="true"></div>
+      </div>
+
+      <div class="trace" id="trace2"><span class="trace-pulse"></span></div>
+
+      <div class="stage" id="stageAes" data-stage="aes">
+        <div class="stage-dot"></div>
+        <div class="stage-label">AES STAGE</div>
+        <div class="stage-sub">aes-256 · gcm verify + decrypt</div>
+      </div>
+
+      <div class="trace" id="trace3"><span class="trace-pulse"></span></div>
+
+      <div class="stage" id="stageOutput" data-stage="output">
+        <div class="stage-dot"></div>
+        <div class="stage-label">ORIGINAL FILE</div>
+        <div class="stage-sub" id="outputStageMeta">—</div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="console-footer">
+    <p>local instance · 127.0.0.1:5000 · no data leaves this machine</p>
+  </footer>
+
+</div>
+
+<script src="shared.js"></script>
+<script src="decrypt.js"></script>
+</body>
+</html>

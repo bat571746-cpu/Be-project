@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings — QAES Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Archivo+Expanded:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="panel-frame">
+
+  <!-- ============ HEADER ============ -->
+  <header class="console-header">
+    <div class="header-left">
+      <h1>QAES<span class="dim">·CONSOLE</span></h1>
+      <p class="subtitle">two-stage encryption instrument — quantum seed / aes-256-gcm</p>
+    </div>
+    <div class="header-right">
+      <div class="status-led" id="connStatus">
+        <span class="led" id="connLed"></span>
+        <span id="connLabel">CONNECTING</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ NAV ============ -->
+  <nav class="top-nav" aria-label="Main">
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="encrypt.html" class="nav-link">ENCRYPT</a>
+    <a href="decrypt.html" class="nav-link">DECRYPT</a>
+    <a href="about.html" class="nav-link">ABOUT</a>
+    <span class="nav-divider" aria-hidden="true"></span>
+    <a href="settings.html" id="navAccountLink" class="nav-link nav-account signed-in active" hidden>ACCOUNT</a>
+    <a href="login.html" id="navLoginLink" class="nav-link nav-account">LOGIN</a>
+    <a href="register.html" id="navRegisterLink" class="nav-link nav-account">REGISTER</a>
+    <a href="#" id="navLogoutLink" class="nav-link nav-account" hidden>LOGOUT</a>
+  </nav>
+
+  <main class="settings-body">
+
+    <div>
+      <h2>Account settings</h2>
+      <p class="settings-intro">Manage your account, appearance, and security preferences. All of this is local to this machine.</p>
+    </div>
+
+    <!-- ============ ACCOUNT INFO ============ -->
+    <section class="settings-card" aria-label="Account information">
+      <h3>Account</h3>
+      <p class="settings-card-sub">Read-only details about your local account.</p>
+      <div class="account-grid">
+        <div class="account-stat">
+          <p class="stat-label">Login ID</p>
+          <p class="stat-value" id="statUsername">—</p>
+        </div>
+        <div class="account-stat">
+          <p class="stat-label">Account created</p>
+          <p class="stat-value" id="statCreated">—</p>
+        </div>
+        <div class="account-stat">
+          <p class="stat-label">Last login</p>
+          <p class="stat-value" id="statLastLogin">—</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ APPEARANCE ============ -->
+    <section class="settings-card" aria-label="Appearance">
+      <h3>Appearance</h3>
+      <p class="settings-card-sub">Switch the console's color scheme. Saved in this browser only.</p>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Light theme</div>
+          <div class="settings-row-hint">Off uses the default dark instrument-panel look.</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="themeToggle">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ============ SECURITY ============ -->
+    <section class="settings-card" aria-label="Security">
+      <h3>Change password</h3>
+      <p class="settings-card-sub">You'll need your current password to set a new one.</p>
+      <form class="settings-form" id="changePasswordForm" autocomplete="off">
+        <div>
+          <label for="oldPassword">CURRENT PASSWORD</label>
+          <input type="password" id="oldPassword" name="oldPassword" autocomplete="current-password" required minlength="8">
+        </div>
+        <div>
+          <label for="newPassword">NEW PASSWORD</label>
+          <input type="password" id="newPassword" name="newPassword" autocomplete="new-password" required minlength="8">
+        </div>
+        <div>
+          <label for="confirmNewPassword">CONFIRM NEW PASSWORD</label>
+          <input type="password" id="confirmNewPassword" name="confirmNewPassword" autocomplete="new-password" required minlength="8">
+        </div>
+        <button type="submit" class="settings-submit" id="changePasswordBtn">UPDATE PASSWORD</button>
+        <p class="settings-feedback" id="passwordFeedback" hidden></p>
+      </form>
+    </section>
+
+    <!-- ============ SESSION ============ -->
+    <section class="settings-card danger-zone" aria-label="Session">
+      <h3>Session</h3>
+      <p class="settings-card-sub">End your current session on this browser.</p>
+      <button class="logout-btn" id="settingsLogoutBtn">LOG OUT</button>
+    </section>
+
+  </main>
+
+  <footer class="console-footer">
+    <p>local instance · 127.0.0.1:5000 · no data leaves this machine</p>
+  </footer>
+
+</div>
+
+<script src="shared.js"></script>
+<script src="settings.js"></script>
+</body>
+</html>

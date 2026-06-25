@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — QAES Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Archivo+Expanded:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="panel-frame">
+
+  <!-- ============ HEADER ============ -->
+  <header class="console-header">
+    <div class="header-left">
+      <h1>QAES<span class="dim">·CONSOLE</span></h1>
+      <p class="subtitle">two-stage encryption instrument — quantum seed / aes-256-gcm</p>
+    </div>
+    <div class="header-right">
+      <div class="status-led" id="connStatus">
+        <span class="led" id="connLed"></span>
+        <span id="connLabel">CONNECTING</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ NAV ============ -->
+  <nav class="top-nav" aria-label="Main">
+    <a href="index.html" class="nav-link">HOME</a>
+    <a href="encrypt.html" class="nav-link">ENCRYPT</a>
+    <a href="decrypt.html" class="nav-link">DECRYPT</a>
+    <a href="about.html" class="nav-link">ABOUT</a>
+    <span class="nav-divider" aria-hidden="true"></span>
+    <a href="settings.html" id="navAccountLink" class="nav-link nav-account signed-in" hidden>ACCOUNT</a>
+    <a href="login.html" id="navLoginLink" class="nav-link nav-account active">LOGIN</a>
+    <a href="register.html" id="navRegisterLink" class="nav-link nav-account">REGISTER</a>
+    <a href="#" id="navLogoutLink" class="nav-link nav-account" hidden>LOGOUT</a>
+  </nav>
+
+  <main class="auth-body">
+    <div class="auth-card">
+      <p class="auth-eyebrow">account access</p>
+      <h2>Log in</h2>
+      <p class="auth-sub">Sign in to use the Encrypt and Decrypt pages, and to manage account settings.</p>
+
+      <div class="auth-error" id="authError" hidden></div>
+
+      <form class="auth-form" id="loginForm" autocomplete="off">
+        <div class="field">
+          <label for="username">LOGIN ID</label>
+          <input type="text" id="username" name="username" placeholder="your login id" autocomplete="username" required minlength="3">
+        </div>
+        <div class="field">
+          <label for="password">PASSWORD</label>
+          <input type="password" id="password" name="password" placeholder="your password" autocomplete="current-password" required minlength="8">
+        </div>
+        <button type="submit" class="auth-submit" id="submitBtn">
+          <span id="submitLabel">LOG IN</span>
+        </button>
+      </form>
+
+      <p class="auth-switch">No account yet? <a href="register.html">Create one</a></p>
+
+      <p class="auth-note">
+        Login attempts are rate-limited. Only your login id and a salted
+        password hash are stored locally — no personal data is collected.
+      </p>
+    </div>
+  </main>
+
+  <footer class="console-footer">
+    <p>local instance · 127.0.0.1:5000 · no data leaves this machine</p>
+  </footer>
+
+</div>
+
+<script src="shared.js"></script>
+<script src="auth.js"></script>
+</body>
+</html>
